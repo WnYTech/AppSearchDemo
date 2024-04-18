@@ -11,6 +11,52 @@
             overflow-x: hidden;
         }
 
+        .result {
+            display: flex; /* Use flex container to enable flex properties */
+            flex-wrap: wrap; /* Allow items to wrap to the next line when there is not enough space */
+            justify-content: flex-start; /* Align items to the start of the flex container (left) */
+            margin: 0 -10px; /* Add negative margin to counteract padding */
+        }
+
+        .poster-container {
+            display: inline-block;
+            width: 200px;
+            position: relative;
+            margin: 0 10px; /* Add margin to create space between posters */
+            margin-bottom: 20px; /* Add bottom margin for spacing between rows */
+        }
+
+        .poster {
+            width: inherit;
+            object-fit: cover;
+            cursor: pointer; /* 포스터에 마우스를 올렸을 때 커서 모양 변경 */
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: inherit;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgb(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+
+        .poster-container:hover .overlay {
+            opacity: 1;
+        }
+
+        .hover_text {
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+        }
+
         .search_area {
             padding: 20px;
         }
@@ -19,6 +65,9 @@
             margin-bottom: 0 !important;
         }
 
+        .keyword:hover {
+            cursor: pointer;
+        }
         
         .search-box {
             position: absolute;
@@ -40,6 +89,18 @@
         .hide {
             display: none;
         }
+        
+        .checkbox-label {
+            display: block;
+        }
+
+        .genre {
+            margin-left: 40px;
+        }
+
+        .input-wrapper{
+            display: inline;
+        }
     </style>
 </head>
 <body>
@@ -47,6 +108,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <div class="wrapper">
     <div class="row">
+        
         <div class="col">
             <div class="logo">
                 <a href="/">WE n YOU TECH</a>
@@ -77,7 +139,57 @@
     </div>
     
     <div class="row">
-        
+        {% if result %}
+        <div class="col-2">
+            <div class="genre">
+                <p>장르</p>
+                <!-- <p>{{facets}}</p> -->
+                <div class="facet-checkbox">
+                {% for facet in facets %}
+                <label class="checkbox-label">
+                    <div class="input-wrapper">
+                        <input type="checkbox" name="genre" value="{{ facet.value }}">
+                        <span>{{ facet.value }}</span>
+                    </div>
+                    <span style="float: right;">{{ facet.count }}</span>
+                </label>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-9">
+            {% if result %}
+            <h2>검색결과</h2>
+            <div class="result">
+                {% for content in result %}
+                <div class="poster-container" onclick="logClick('{{content.id.raw}}')">
+                    <img src="{{ content.poster_path.raw }}" class="poster" alt="poster">
+                    <div class="overlay">
+                        <p class="hover_text">{{ content.title.raw }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>검색결과없음</p>
+            {% endif %}
+        </div>
+        {% if result %}
+        <div class="col">
+            <div class="top_query">
+                <table>
+                    {% for query in top_queries %}
+                    <tr>
+                        <td class="keyword">{{ loop.index }}</td>
+                        <td class="keyword" onclick="location.href='/search?term={{ query.term }}'">{{ query.term }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+    
+            </div>
+        </div>
+        {% endif %}
     </div>
     
 </div>
@@ -92,7 +204,6 @@
 
     const timer = (beforeInput) => {
         // 0.5초마다 검색어를 확인
-        // 하나하나 변경될때마다 데이터를 넘기는 것보다 딜레이가 있는 것이 낫다 판단
         setTimeout(() => {
             if (searchBar.value === beforeInput) {
                 loadData(searchBar.value);
@@ -172,6 +283,48 @@
         fetch(url)
             .then((res) => console.log("response:", res))
     }
+
+
+    //장르 체크 했을때 필터링
+    $("input:checkbox[name='genre']").click(function(e) {
+        var genre = [];
+        $('input:checkbox[name=genre]').each(function (index) {
+            if($(this).is(":checked")==true){
+                genre.push($(this).val());
+            }
+            
+        })  
+        console.log(genre);
+        $.ajax({
+            type: 'GET',
+            url: '/filter',
+            traditional: true,
+            data: {
+                "genre": genre, 
+                "term": "{{ term }}"
+            }, // 선택된 항목들을 쉼표로 구분하여 전송
+            success: function(response) {
+                console.log(response); // 서버로부터의 응답을 콘솔에 출력
+                $('.result').html(''); // 기존 결과를 지우고
+                for (var i = 0; i < response.length; i++) {
+                    var content = response[i];
+                    var html = '<div class="poster-container" onclick="logClick(\'' + content.id.raw + '\')">' +
+                            '<img src="' + content.poster_path.raw + '" class="poster" alt="poster">' +
+                            '<div class="overlay">' +
+                            '<p class="hover_text">' + content.title.raw + '</p>' +
+                            '</div>' +
+                            '</div>';
+                    $('.result').append(html); // 받아온 데이터로 결과를 생성하여 추가
+                }
+                
+            },
+            error: function(error) {
+                console.error('Error:', error); // 오류가 발생한 경우 콘솔에 오류 메시지 출력
+            }
+        });
+    });
+
+
 
 </script>
 
