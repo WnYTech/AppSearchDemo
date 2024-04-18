@@ -52,11 +52,16 @@ def index():
 @app.route('/search', methods=['GET'])
 def search():
     term = request.args.get('term')
-    search_result=app_search.search(engine_name=engine_name, page_size=20, query=term)
+    #search
+    search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, facets={"genres.kor": {"type": "value", "size": 20}})
     pass_result = search_result['results']
+    pass_facets = search_result["facets"]["genres.kor"][0]["data"]
+
+    #top query
     top_queries=app_search.get_top_queries_analytics(engine_name=engine_name, page_size=11, filters={'results':True})
     pass_top_queries=top_queries['results'][1:12]
-    return render_template('index.html', result=pass_result, top_queries=pass_top_queries, term=term)
+
+    return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets)
 
 #자동완성 suggest
 @app.route('/suggest', methods=['GET'])
@@ -77,6 +82,22 @@ def log_click():
     id=request.args.get('id')
     app_search.log_clickthrough(engine_name=engine_name, query=term, document_id=id)
     return 'logging success'
+
+#genre 필터링
+@app.route('/filter')
+def filtering():
+
+    term = request.args.get('term')
+    genres = request.args.getlist('genre')
+    if genres :
+        search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, filters={"genres.kor": genres})
+        return search_result['results']
+    else :
+        search_result=app_search.search(engine_name=engine_name, page_size=20, query=term)
+        return search_result['results']
+        
+    
+    
 
 
 if __name__ == '__main__':
