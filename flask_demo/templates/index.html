@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: black; /* 배경색을 검정으로 설정 */
-            color: white; /* 전체 글자색을 흰색으로 설정 */
+            background-color: rgb(255, 255, 255); /* 배경색을 검정으로 설정 */
+            color: rgb(0, 0, 0); /* 전체 글자색을 흰색으로 설정 */
             overflow-x: hidden;
         }
 
@@ -52,8 +52,8 @@
         .wenyname {
             font-family: "Noto Sans", sans-serif;
             font-size: xx-large;
-            font-weight: 500;
-            color: #f2f2f2; /* 글자색 */
+            font-weight: 600;
+            color: #3d62ac; /* 글자색 */
             text-decoration-line: none;
         }
     </style>
@@ -77,12 +77,6 @@
                     <!-- <input type="text" id="search-bar" name="term" class="search-bar" autocomplete='off'> -->
                     <div class="input-group mb-3" style="margin-bottom: 0;">
                         <input type="text" value="{{ term }}" class="form-control" id="search-bar" name="term" aria-label="Text input with dropdown button" autocomplete="off" onclick="check_click()">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">정렬</button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                          <li><a class="dropdown-item" href="#">인기도순</a></li>
-                          <li><a class="dropdown-item" href="#">러닝타임</a></li>
-                          <li><a class="dropdown-item" href="#">개봉일순</a></li>
-                        </ul>
                         <div class="search-box hide">
                             <ul class="search-ul"></ul>
                         </div>

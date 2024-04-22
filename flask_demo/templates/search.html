@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: black; /* 배경색을 검정으로 설정 */
-            color: white; /* 전체 글자색을 흰색으로 설정 */
+            background-color: rgb(255, 255, 255); /* 배경색을 검정으로 설정 */
+            color: rgb(0, 0, 0); /* 전체 글자색을 흰색으로 설정 */
             overflow-x: hidden;
         }
 
@@ -23,8 +23,8 @@
         .wenyname {
             font-family: "Noto Sans", sans-serif;
             font-size: xx-large;
-            font-weight: 500;
-            color: #f2f2f2; /* 글자색 */
+            font-weight: 600;
+            color: #3d62ac; /* 글자색 */
             text-decoration-line: none;
         }
 
@@ -82,19 +82,20 @@
             margin-bottom: 0 !important;
         }
 
-        .keyword:hover {
+        .query_row:hover {
             cursor: pointer;
         }
         
         .search-box {
             position: absolute;
             z-index: 1000; /* 다른 요소들 위에 표시 */
-            top: 100%;
-            /* left: 0; */
+            top: 110%;
+            /* border: black solid 1px; */
             background-color: white; /* 검색 결과 박스의 배경색 */
             border-radius: 5px; /* 검색 결과 박스의 모서리 둥글게 */
             color: black;
             width: 100%; /* 검색 결과 박스의 너비를 검색창과 같게 설정 */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         }
     
         .search-ul {
@@ -112,12 +113,31 @@
         }
 
         .genre {
-            margin-left: 40px;
+            width: 200px;
+            margin: auto;
         }
 
         .input-wrapper{
             display: inline;
         }
+
+
+        .query_row {
+            display: block;
+        }
+
+        .query_count {
+            width: 25px;
+            height: 25px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .query {
+            display: inline;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -175,6 +195,8 @@
             </div>
         </div>
         {% endif %}
+
+        <!-- 검색결과 -->
         <div class="col-9">
             {% if result %}
             <h2>검색결과</h2>
@@ -192,21 +214,29 @@
             <p>검색결과없음</p>
             {% endif %}
         </div>
+        <!--  -->
+
+        <!-- 실시간 검색어 -->
         {% if result %}
         <div class="col">
             <div class="top_query">
-                <table>
+                <p>실시간 검색어</p>
+                <div class="queries">
                     {% for query in top_queries %}
-                    <tr>
-                        <td class="keyword">{{ loop.index }}</td>
-                        <td class="keyword" onclick="location.href='/search?term={{ query.term }}'">{{ query.term }}</td>
-                    </tr>
+                    <label class="query_row" onclick="location.href='/search?term={{ query.term }}'">
+                        <div class="query_count">
+                            {{ loop.index }}
+                        </div>
+                        <div class="query">
+                            {{ query.term }}
+                        </div>       
+                    </label>
                     {% endfor %}
-                </table>
-    
+                </div>
             </div>
         </div>
         {% endif %}
+        <!--  -->
     </div>
     
 </div>
