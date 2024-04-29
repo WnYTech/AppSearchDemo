@@ -32,12 +32,13 @@
         .search-box {
             position: absolute;
             z-index: 1000; /* 다른 요소들 위에 표시 */
-            top: 100%;
-            /* left: 0; */
+            top: 110%;
+            /* border: black solid 1px; */
             background-color: white; /* 검색 결과 박스의 배경색 */
             border-radius: 5px; /* 검색 결과 박스의 모서리 둥글게 */
             color: black;
             width: 100%; /* 검색 결과 박스의 너비를 검색창과 같게 설정 */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         }
     
         .search-ul {
@@ -92,98 +93,7 @@
     
 </div>
 
-<script>
-    const searchBar = document.querySelector("#search-bar");
-    const searchBox = document.querySelector(".search-box");
-    const searchUl = document.querySelector(".search-ul");
-    let cache = "";
-
-
-
-    const timer = (beforeInput) => {
-        // 0.5초마다 검색어를 확인
-        // 하나하나 변경될때마다 데이터를 넘기는 것보다 딜레이가 있는 것이 낫다 판단
-        setTimeout(() => {
-            if (searchBar.value === beforeInput) {
-                loadData(searchBar.value);
-                checkInput();
-            } else {
-                checkInput();
-            } // if-else
-
-            // 검색어가 없으면 요소를 숨김
-            if (searchBar.value !== "") {
-                searchBox.classList.remove("hide");
-            } else {
-                searchBox.classList.add("hide");
-            } // if-else
-        }, 500);
-    } // timer
-
-    // 일정 시간 간격으로 조회
-    const checkInput = () => {
-        const beforeInput = searchBar.value;
-        timer(beforeInput);
-    }
-
-    // 검색어 불러오기
-    const loadData = (word) => {
-        let url = `/suggest?query=${word}`;
-
-        // 검색어를 입력하면 url 값이 변경된다
-        if (cache !== url) {
-            cache = url;
-            let data = {};
-
-            data.word = word;
-            console.log(word); // {word = "축구"}
-
-            fetch(cache)
-                // response 객체를 json 변환
-                .then((res) => res.json())
-                .then((data) => {
-                    console.log(data);
-                    fillSearch(data); // data로 list 만드는 함수 실행
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
-    }
-    
-
-
-    const fillSearch = (data) => {
-        searchUl.innerHTML = "";
-
-        // 데이터 가공하기
-        data.forEach((el, idx) => {
-
-            // html 요소 생성
-            const li = document.createElement("li");
-            li.textContent = el;
-            // li.onclick = suggest_click(el);
-            searchUl.appendChild(li);
-        })
-    }
-
-    // function suggest_click(term) {
-    //     window.location.href = "/search?term="+term;
-    // }
-
-    function check_click() {
-        checkInput();
-    }
-
-
-    function logClick(id) {
-        let url = "/click?term={{ term }}&id="+id
- 
-        fetch(url)
-            .then((res) => console.log("response:", res))
-    }
-
-</script>
+<script src="./static/search-box.js"></script>
 
 </body>
 </html>
