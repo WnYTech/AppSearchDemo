@@ -91,10 +91,10 @@ def filtering():
     genres = request.args.getlist('genre')
     if genres :
         search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, filters={"genres.kor": genres}, facets={"genres.kor": {"type": "value", "size": 20}})
-        passre = {
-            "search_result" : search_result['results'],
-            "genres" : "dsss"
-        }
+        # passre = {
+        #     "search_result" : search_result['results']
+        # }
+        passre = search_result['results']
         return passre
     else :
         search_result=app_search.search(engine_name=engine_name, page_size=20, query=term)
