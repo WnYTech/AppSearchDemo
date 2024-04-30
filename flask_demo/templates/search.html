@@ -116,7 +116,7 @@
             display: block;
         }
 
-        .genre {
+        .genre, .cast {
             width: 200px;
             margin: auto;
         }
@@ -182,10 +182,10 @@
     
     <div class="row">
         {% if result %}
+        <!-- 장르 필터링 -->
         <div class="col-2">
             <div class="genre">
                 <p>장르</p>
-                <!-- <p>{{facets}}</p> -->
                 <div class="facet-checkbox">
                 {% for facet in facets %}
                 <label class="checkbox-label">
@@ -198,8 +198,23 @@
                 {% endfor %}
                 </div>
             </div>
+
+            <div class="cast">
+                <p style="padding-top: 20px">배우</p>
+                <div class="facet-checkbox">
+                {% for cast in casts %}
+                <label class="checkbox-label">
+                    <div class="input-wrapper">
+                        <input type="checkbox" name="genre" value="{{ cast.value }}">
+                        <span>{{ cast.value }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+                </div>
+            </div>
         </div>
         {% endif %}
+        <!-- 장르 필터링 끝 -->
 
         <!-- 검색결과 -->
         <div class="col-9">
@@ -256,34 +271,87 @@
             .then((res) => console.log("response:", res))
     }
     //장르 체크 했을때 필터링
-    $("input:checkbox[name='genre']").click(function(e) {
+    $('.genre').on('click', function(){
         var genre = [];
+        
         $('input:checkbox[name=genre]').each(function (index) {
             if($(this).is(":checked")==true){
                 genre.push($(this).val());
+                console.log('pushed');
             }
             
         })  
+
+        console.log(genre);
 
         $.ajax({
             type: 'GET',
             url: '/filter',
             traditional: true,
+            dataType : "json",
             data: {
                 "genre": genre, 
                 "term": "{{ term }}"
             }, // 선택된 항목들을 쉼표로 구분하여 전송
             success: function(response) {
+                
+                
+                var search_result = response.search_result;
+                var facet = response.facets;
+                console.log(search_result);
+                console.log(facet);
+                
+                
                 $('.result').html(''); // 기존 결과를 지우고
-                for (var i = 0; i < response.length; i++) {
-                    var content = response[i];
-                    var html = '<div class="poster-container" onclick="logClick(\'' + content.id.raw + '\')">' +
+                for (var i = 0; i < search_result.length; i++) {
+                    var content = search_result[i];
+                    var html1 = '<div class="poster-container" onclick="logClick(\'' + content.id.raw + '\')">' +
                             '<img src="' + content.poster_path.raw + '" class="poster" alt="poster">' +
                             '<div class="overlay">' +
                             '<p class="hover_text">' + content.title.raw + '</p>' +
                             '</div>' +
                             '</div>';
-                    $('.result').append(html); // 받아온 데이터로 결과를 생성하여 추가
+                    $('.result').append(html1); // 받아온 데이터로 결과를 생성하여 추가
+                }
+
+                
+                $('.facet-checkbox').html(''); // 기존 결과를 지우고
+                for (var i = 0; i < facet.length; i++) {
+                    var content = facet[i];
+                    var html;
+                    if(1 <= genre.length) {
+                        for(var j = 0; j < genre.length; j++) {
+                            if(genre[j] == content.value) {
+                                console.log(genre[j]);
+                                html = '<label class="checkbox-label">' +
+                                    '<div class="input-wrapper">' +
+                                    '<input type="checkbox" name="genre" value='+ content.value +' checked>' +
+                                    '<span>'+ content.value +'</span>' +
+                                    '</div>' +
+                                    '<span style="float: right;">'+ content.count +'</span>' + 
+                                    '</label>';
+                            }else{
+                                html = '<label class="checkbox-label">' +
+                                    '<div class="input-wrapper">' +
+                                    '<input type="checkbox" name="genre" value='+ content.value +'>' +
+                                    '<span>'+ content.value +'</span>' +
+                                    '</div>' +
+                                    '<span style="float: right;">'+ content.count +'</span>' + 
+                                    '</label>';
+                            }
+                        }
+                    }else{
+                        html = '<label class="checkbox-label">' +
+                            '<div class="input-wrapper">' +
+                            '<input type="checkbox" name="genre" value='+ content.value +'>' +
+                            '<span>'+ content.value +'</span>' +
+                            '</div>' +
+                            '<span style="float: right;">'+ content.count +'</span>' + 
+                            '</label>';
+                    }
+                    
+                    
+                    $('.facet-checkbox').append(html); // 받아온 데이터로 결과를 생성하여 추가
                 }
                 
             },
@@ -292,6 +360,8 @@
             }
         });
     });
+
+
 
 
 

@@ -1,5 +1,5 @@
 from elastic_enterprise_search import AppSearch
-from flask import Flask
+from flask import Flask, jsonify
 from flask import render_template
 from flask import request
 from dotenv import load_dotenv
@@ -53,15 +53,16 @@ def index():
 def search():
     term = request.args.get('term')
     #search
-    search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, facets={"genres.kor": {"type": "value", "size": 20}})
+    search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, facets={"genres.kor": {"type": "value", "size": 10}, "cast":{"type": "value", "size":10}})
     pass_result = search_result['results']
     pass_facets = search_result["facets"]["genres.kor"][0]["data"]
+    pass_cast = search_result["facets"]["cast"][0]["data"]
 
     #top query
     top_queries=app_search.get_top_queries_analytics(engine_name=engine_name, page_size=11, filters={'results':True})
-    pass_top_queries=top_queries['results'][1:12]
+    pass_top_queries=top_queries['results'][0:11]
 
-    return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets)
+    return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets, casts=pass_cast)
 
 #자동완성 suggest
 @app.route('/suggest', methods=['GET'])
@@ -90,15 +91,23 @@ def filtering():
     term = request.args.get('term')
     genres = request.args.getlist('genre')
     if genres :
-        search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, filters={"genres.kor": genres}, facets={"genres.kor": {"type": "value", "size": 20}})
-        # passre = {
-        #     "search_result" : search_result['results']
-        # }
-        passre = search_result['results']
-        return passre
+        search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, filters={"genres.kor": genres}, facets={"genres.kor": {"type": "value", "size": 10}})
+        pass_facets = search_result["facets"]["genres.kor"][0]["data"]
+        passe = {
+            "search_result" : search_result['results'],
+            "facets" : pass_facets
+        }
+        # passe = search_result['results']
+        return jsonify(passe)
     else :
-        search_result=app_search.search(engine_name=engine_name, page_size=20, query=term)
-        return search_result['results']
+        search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, facets={"genres.kor": {"type": "value", "size": 10}, "cast":{"type": "value", "size":10}})
+        pass_facets = search_result["facets"]["genres.kor"][0]["data"]
+        pass_cast = search_result["facets"]["cast"][0]["data"]
+        passe = {
+            "search_result" : search_result['results'],
+            "facets" : pass_facets
+        }
+        return jsonify(passe)
         
     
     
