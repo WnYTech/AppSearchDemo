@@ -21,7 +21,7 @@ APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 app = Flask(__name__)
 app.secret_key = APP_SECRET_KEY
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=1)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=5)
 
 ################ urllib3 경고 안뜨게 설정 ############################
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
