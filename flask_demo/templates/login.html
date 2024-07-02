@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WE n YOU TECH App Search</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #000000;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .login-btn {
+            background-color: #2975D9;
+            color: #fff;
+            padding: 10px;
+            margin-left: 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #2E2EFE;
+        }
+
+        .wenyname {
+            font-family: "Noto Sans", sans-serif;
+            font-size: xx-large;
+            font-weight: 600;
+            color: #2975D9; /* 글자색 */
+            text-decoration-line: none;
+        }
+    </style>
+</head>
+<body>
+<div class="col">
+    <div class="logo">
+        <img src="../static/wnytech-logo-horiz.png" style="height: 50px;padding-right: 15px;">
+        <p class="wenyname">App Search</p>
+    </div>
+</div>
+<div class="login-container">
+    <form class="login-form" action="/login" method="post">
+        <div class="form-group">
+            <label for="userId">아이디:</label>
+            <input type="text" id="id" name="id" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="login-btn">로그인</button>
+    </form>
+</div>
+</body>
+</html>

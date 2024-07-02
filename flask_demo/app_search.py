@@ -1,35 +1,41 @@
 from elastic_enterprise_search import AppSearch
-from flask import Flask
-from flask import render_template
-from flask import request
+from elasticsearch import Elasticsearch
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from dotenv import load_dotenv
 import os
 import urllib3
-
+from datetime import timedelta
 from elasticapm.contrib.flask import ElasticAPM
 
+############################# load .env #############################
+load_dotenv()
+APP_SEARCH_HOST = os.environ.get('APP_SEARCH_HOST')
+ELASTICSEARCH_HOST = os.environ.get('ELASTICSEARCH_HOST')
+ELASTIC_APM_HOST = os.environ.get('ELASTIC_APM_HOST')
+ENGINE_API_KEY = os.environ.get('ENGINE_API_KEY')
+ELASTICSEARCH_USER = os.environ.get('ELASTICSEARCH_USER')
+ELASTICSEARCH_PASSWORD = os.environ.get('ELASTICSEARCH_PASSWORD')
+APM_SECRET_TOKEN = os.environ.get('APM_SECRET_TOKEN')
+ENGINE_NAME = os.environ.get('ENGINE_NAME')
+APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 app = Flask(__name__)
+app.secret_key = APP_SECRET_KEY
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=1)
 
 ################ urllib3 경고 안뜨게 설정 ############################
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-############################# load .env #############################
-
-load_dotenv()
-APP_SEARCH_HOST = os.environ.get('APP_SEARCH_HOST')
-ELASTIC_APM_HOST = os.environ.get('ELASTIC_APM_HOST')
-API_KEY = os.environ.get('API_KEY')
-APM_SECRET_TOKEN = os.environ.get('APM_SECRET_TOKEN')
-ENGINE_NAME = os.environ.get('ENGINE_NAME')
-
 ############################## enterprise_search client ##############################
 
 app_search = AppSearch(
     APP_SEARCH_HOST,
-    bearer_auth=API_KEY
+    bearer_auth=ENGINE_API_KEY
 )
 engine_name=ENGINE_NAME
 
+############################## elasticsearch client #############################
+
+client = Elasticsearch(ELASTICSEARCH_HOST, basic_auth=(ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD), verify_certs=None, ssl_show_warn=False)
 ################################## elastic apm #################################
 
 app.config['ELASTIC_APM'] = {
@@ -42,26 +48,67 @@ apm = ElasticAPM(app)
 
 ################################################################################
 
+class User:
+    def __init__(self, id, password, name):
+        self.id = id
+        self.password = password
+        self.name = name
+        
+    def get_id(self):
+        return self.id
+    
+    def get_password(self):
+        return self.password
+
+
+
 
 #main
 @app.route('/')
 def index():
-    return render_template('index.html', number=1)
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    else:
+        return render_template('index.html')
+    
+
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:
+        # form 방식으로 받아올 때에는 form에, json 방식으로 받아올 때에는 json에 원하는 정보가 담겨있음
+        req_id = request.form.get('id')
+        req_password = request.form.get('password')
+        
+        resp = client.get(index="wnyflix_user", id=req_id)
+        resp_user = User(resp['_source']['id'], resp['_source']['password'], resp['_source']['name'])
+
+        if req_password == resp_user.get_password():
+            session['user_id'] = resp_user.get_id()
+            print('로그인성공 id : '+ session.get('user_id'))
+            return redirect(url_for('index'))
+        else:
+            return render_template('login.html')
+
 
 #검색
 @app.route('/search', methods=['GET'])
 def search():
-    term = request.args.get('term')
-    #search
-    search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, facets={"genres.kor": {"type": "value", "size": 20}})
-    pass_result = search_result['results']
-    pass_facets = search_result["facets"]["genres.kor"][0]["data"]
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    else:
+        term = request.args.get('term')
+        #search
+        search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, facets={"genres.kor": {"type": "value", "size": 20}}, analytics={"tags": [session.get('user_id')]})
+        pass_result = search_result['results']
+        pass_facets = search_result["facets"]["genres.kor"][0]["data"]
 
-    #top query
-    top_queries=app_search.get_top_queries_analytics(engine_name=engine_name, page_size=11, filters={'results':True})
-    pass_top_queries=top_queries['results'][1:12]
+        #top query
+        top_queries=app_search.get_top_queries_analytics(engine_name=engine_name, page_size=11, filters={'results':True})
+        pass_top_queries=top_queries['results'][1:12]
 
-    return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets)
+        return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets)
 
 #자동완성 suggest
 @app.route('/suggest', methods=['GET'])
