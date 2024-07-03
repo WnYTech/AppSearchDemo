@@ -69,7 +69,9 @@ def index():
     if not session.get('user_id'):
         return redirect(url_for('login'))
     else:
-        return render_template('index.html')
+        history = get_history()
+        
+        return render_template('index.html', history=history)
     
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -107,8 +109,11 @@ def search():
         #top query
         top_queries=app_search.get_top_queries_analytics(engine_name=engine_name, page_size=11, filters={'results':True})
         pass_top_queries=top_queries['results'][1:12]
+        
+        #history
+        history = get_history()
 
-        return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets)
+        return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets, history=history)
 
 #자동완성 suggest
 @app.route('/suggest', methods=['GET'])
@@ -148,9 +153,13 @@ def filtering():
         search_result=app_search.search(engine_name=engine_name, page_size=20, query=term)
         return search_result['results']
         
+def get_history():
+    res = app_search.get_top_queries_analytics(engine_name=engine_name, page_size=5, filters={"tag": session.get('user_id')})
+    history = res['results']
     
+    return history
     
 
 
 if __name__ == '__main__':
-    app.run(port=5001,host="0.0.0.0", debug=True)
+    app.run(port=5000,host="0.0.0.0", debug=True)
