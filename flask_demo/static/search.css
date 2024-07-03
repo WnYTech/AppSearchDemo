@@ -1,0 +1,78 @@
+.result {
+    display: flex; /* Use flex container to enable flex properties */
+    flex-wrap: wrap; /* Allow items to wrap to the next line when there is not enough space */
+    justify-content: flex-start; /* Align items to the start of the flex container (left) */
+    margin: 0 -10px; /* Add negative margin to counteract padding */
+}
+
+.poster-container {
+    display: inline-block;
+    width: 200px;
+    position: relative;
+    margin: 0 10px; /* Add margin to create space between posters */
+    margin-bottom: 20px; /* Add bottom margin for spacing between rows */
+}
+
+.poster {
+    width: inherit;
+    object-fit: cover;
+    cursor: pointer; /* 포스터에 마우스를 올렸을 때 커서 모양 변경 */
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: inherit;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.poster-container:hover .overlay {
+    opacity: 1;
+}
+
+.hover_text {
+    color: #fff;
+    font-weight: 600;
+    text-align: center;
+}
+
+.query_row:hover {
+    cursor: pointer;
+}
+
+.checkbox-label {
+    display: block;
+}
+
+.genre {
+    width: 200px;
+    margin: auto;
+}
+
+.input-wrapper{
+    display: inline;
+}
+
+
+.query_row {
+    display: block;
+}
+
+.query_count {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    text-align: center;
+}
+
+.query {
+    display: inline;
+}

@@ -8,140 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="./static/common.css" rel="stylesheet" />
+    <link href="./static/search.css" rel="stylesheet" />
     <style>
-        body {
-            background-color: rgb(255, 255, 255); /* 배경색을 검정으로 설정 */
-            color: rgb(0, 0, 0); /* 전체 글자색을 흰색으로 설정 */
-            overflow-x: hidden;
-        }
-
-        .logo {
-            margin-top: 10px;
-            margin-left: 10px;
-        }
-
-        .wenyname {
-            font-family: "Noto Sans", sans-serif;
-            font-size: xx-large;
-            font-weight: 600;
-            color: #2975D9; /* 글자색 */
-            text-decoration-line: none;
-        }
-
-        .result {
-            display: flex; /* Use flex container to enable flex properties */
-            flex-wrap: wrap; /* Allow items to wrap to the next line when there is not enough space */
-            justify-content: flex-start; /* Align items to the start of the flex container (left) */
-            margin: 0 -10px; /* Add negative margin to counteract padding */
-        }
-
-        .poster-container {
-            display: inline-block;
-            width: 200px;
-            position: relative;
-            margin: 0 10px; /* Add margin to create space between posters */
-            margin-bottom: 20px; /* Add bottom margin for spacing between rows */
-        }
-
-        .poster {
-            width: inherit;
-            object-fit: cover;
-            cursor: pointer; /* 포스터에 마우스를 올렸을 때 커서 모양 변경 */
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: inherit;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgb(0, 0, 0, 0.5);
-            opacity: 0;
-            transition: opacity 0.2s;
-            cursor: pointer;
-        }
-
-        .poster-container:hover .overlay {
-            opacity: 1;
-        }
-
-        .hover_text {
-            color: #fff;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .search_area {
-            padding: 20px;
-        }
-
-        .mb-3 {
-            margin-bottom: 0 !important;
-        }
-
-        .query_row:hover {
-            cursor: pointer;
-        }
         
-        .search-box {
-            position: absolute;
-            z-index: 1000; /* 다른 요소들 위에 표시 */
-            top: 110%;
-            /* border: black solid 1px; */
-            background-color: white; /* 검색 결과 박스의 배경색 */
-            border-radius: 5px; /* 검색 결과 박스의 모서리 둥글게 */
-            color: black;
-            width: 100%; /* 검색 결과 박스의 너비를 검색창과 같게 설정 */
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        }
-    
-        .search-ul {
-            list-style: none;
-            padding-left: 0px;
-            margin: 5px;
-        }
-
-        .search-ul li {
-            cursor: pointer;
-        }
-
-        .hide {
-            display: none;
-        }
-        
-        .checkbox-label {
-            display: block;
-        }
-
-        .genre {
-            width: 200px;
-            margin: auto;
-        }
-
-        .input-wrapper{
-            display: inline;
-        }
-
-
-        .query_row {
-            display: block;
-        }
-
-        .query_count {
-            width: 25px;
-            height: 25px;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .query {
-            display: inline;
-        }
-
-
         
     </style>
 </head>
@@ -173,6 +43,13 @@
                         </ul>
                         <div class="search-box hide">
                             <ul class="search-ul"></ul>
+                            <hr/>
+                            <p class="recent">최근 검색기록</p>
+                            <ul class="search-ul">
+                                {% for h in history %}
+                                <li onclick="location.href='/search?term={{ h.term }}'">{{ h.term }}</li>
+                                {% endfor %}
+                            </ul>
                         </div>
                       </div>
                 </form>
