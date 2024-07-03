@@ -115,7 +115,7 @@ def search():
 def suggest():
     query = request.args.get('query')
     suggest_li=[]
-    suggest_result = app_search.query_suggestion(engine_name=engine_name, query=query, size=10, types={'documents': {'fields': ['title']}})
+    suggest_result = app_search.query_suggestion(engine_name=engine_name, query=query, size=5, types={'documents': {'fields': ['title']}})
     for i in range(len(suggest_result['results']['documents'])):
         suggest_word=suggest_result['results']['documents'][i]['suggestion']
         if suggest_word!=query:
@@ -127,7 +127,7 @@ def suggest():
 def log_click():
     term = request.args.get('term')
     id=request.args.get('id')
-    app_search.log_clickthrough(engine_name=engine_name, query=term, document_id=id)
+    app_search.log_clickthrough(engine_name=engine_name, query=term, document_id=id, tags=session.get('user_id'))
     return 'logging success'
 
 #genre 필터링
@@ -138,11 +138,12 @@ def filtering():
     genres = request.args.getlist('genre')
     if genres :
         search_result=app_search.search(engine_name=engine_name, page_size=20, query=term, filters={"genres.kor": genres}, facets={"genres.kor": {"type": "value", "size": 20}})
-        passre = {
-            "search_result" : search_result['results'],
-            "genres" : "dsss"
-        }
-        return passre
+        # passre = {
+        #     "search_result" : search_result['results'],
+        #     "genres" : "dsss"
+        # }
+        # return passre
+        return search_result['results']
     else :
         search_result=app_search.search(engine_name=engine_name, page_size=20, query=term)
         return search_result['results']

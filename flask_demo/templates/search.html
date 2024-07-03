@@ -274,10 +274,12 @@
                 "term": "{{ term }}"
             }, // 선택된 항목들을 쉼표로 구분하여 전송
             success: function(response) {
-                console.log(response); // 서버로부터의 응답을 콘솔에 출력
+                //console.log(response); // 서버로부터의 응답을 콘솔에 출력
                 $('.result').html(''); // 기존 결과를 지우고
+                //search_result = response.search_result;
                 for (var i = 0; i < response.length; i++) {
                     var content = response[i];
+                    //console.log(search_result[i]);
                     var html = '<div class="poster-container" onclick="logClick(\'' + content.id.raw + '\')">' +
                             '<img src="' + content.poster_path.raw + '" class="poster" alt="poster">' +
                             '<div class="overlay">' +
