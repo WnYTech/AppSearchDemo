@@ -21,7 +21,7 @@ APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 app = Flask(__name__)
 app.secret_key = APP_SECRET_KEY
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=5)
+# app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
 
 ################ urllib3 경고 안뜨게 설정 ############################
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -100,7 +100,7 @@ def search():
     else:
         term = request.args.get('term')
         #search
-        search_result=app_search.search(engine_name=engine_name, page_size=42, query=term, facets={"genres.kor": {"type": "value", "size": 20}}, analytics={"tags": [session.get('user_id')]})
+        search_result=app_search.search(engine_name=engine_name, page_size=42, query=term, facets={"genres.kor": {"type": "value", "size": 12}}, analytics={"tags": [session.get('user_id')]})
         pass_result = search_result['results']
         pass_facets = search_result["facets"]["genres.kor"][0]["data"]
 
@@ -108,8 +108,16 @@ def search():
         top_queries=app_search.get_top_queries_analytics(engine_name=engine_name, page_size=11, filters={'results':True})
         pass_top_queries=top_queries['results'][1:12]
         
+        #get seen(click)
+        res_seen = app_search.get_top_clicks_analytics(engine_name=engine_name, query=term, filters={"tag": session.get('user_id')})
+        seen = res_seen['results']
+        seen_doc=[]
+        for i in range(len(seen)):
+            sd = app_search.get_documents(engine_name=engine_name, document_ids=[seen[i]['document_id']])
+            seen_doc.append(sd[0])
+            print(sd)
 
-        return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets)
+        return render_template('search.html', result=pass_result, top_queries=pass_top_queries, term=term, facets=pass_facets, seen=seen_doc)
 
 #자동완성 suggest
 @app.route('/suggest', methods=['GET'])

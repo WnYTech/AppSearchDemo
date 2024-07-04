@@ -57,7 +57,7 @@
         <div class="col-2">
             <div class="row">
                 <div class="genre">
-                    <p>장르</p>
+                    <p class="aside_title">장르</p>
                     <!-- <p>{{facets}}</p> -->
                     <div class="facet-checkbox">
                     {% for facet in facets %}
@@ -72,11 +72,19 @@
                     </div>
                 </div>
             </div>
+            {% if seen %}
             <div class="row">
                 <div class="seen">
-                    클릭기록
+                    <p class="aside_title">시청 기록</p>
+                    {% for s in seen %}
+                    <div class="s_content">
+                        <img src="{{ s.poster_path }}" alt="mini_poster" style="width: 70px;">
+                        <span>{{ s.title }}</span>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
         {% endif %}
 
