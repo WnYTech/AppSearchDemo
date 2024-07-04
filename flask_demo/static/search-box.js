@@ -1,6 +1,7 @@
 const searchBar = document.querySelector("#search-bar");
 const searchBox = document.querySelector(".search-box");
 const searchUl = document.querySelector(".search-ul");
+const searchUlPer = document.querySelector(".per");
 let cache = "";
 
 
@@ -34,6 +35,7 @@ const checkInput = () => {
 // 검색어 불러오기
 const loadData = (word) => {
     let url = `/suggest?query=${word}`;
+    let url2 = `/suggestPer?query=${word}`;
 
     // 검색어를 입력하면 url 값이 변경된다
     if (cache !== url) {
@@ -53,6 +55,17 @@ const loadData = (word) => {
             .catch((err) => {
                 console.log(err);
             });
+
+        fetch(url2)
+            // response 객체를 json 변환
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                fillSearch2(data); // data로 list 만드는 함수 실행
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 }
 
@@ -66,12 +79,29 @@ const fillSearch = (data) => {
 
         // html 요소 생성
         const li = document.createElement("li");
-        li.textContent = el;
-        // li.setAttribute("onclick","suggest_click")
+        // li.textContent = el;
+        li.innerHTML = `<img src="./static/icon/search.svg" alt="clock icon" style="margin-right: 8px;"/> ${el}`;
         li.onclick = function () {
             suggest_click(el);
         }
         searchUl.appendChild(li);
+    })
+}
+
+const fillSearch2 = (data) => {
+    searchUlPer.innerHTML = "";
+
+    // 데이터 가공하기
+    data.forEach((el, idx) => {
+
+        // html 요소 생성
+        const li = document.createElement("li");
+        // li.textContent = el;
+        li.innerHTML = `<img src="./static/icon/clock-history.svg" alt="clock icon" style="margin-right: 8px;"/> ${el}`;
+        li.onclick = function () {
+            suggest_click(el);
+        }
+        searchUlPer.appendChild(li);
     })
 }
 

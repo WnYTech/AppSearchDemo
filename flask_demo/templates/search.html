@@ -43,12 +43,7 @@
                         </ul>
                         <div class="search-box hide">
                             <ul class="search-ul"></ul>
-                            <hr/>
-                            <p class="recent">최근 검색기록</p>
-                            <ul class="search-ul">
-                                {% for h in history %}
-                                <li onclick="location.href='/search?term={{ h.term }}'">{{ h.term }}</li>
-                                {% endfor %}
+                            <ul class="search-ul per">
                             </ul>
                         </div>
                       </div>
@@ -60,19 +55,26 @@
     <div class="row">
         {% if result %}
         <div class="col-2">
-            <div class="genre">
-                <p>장르</p>
-                <!-- <p>{{facets}}</p> -->
-                <div class="facet-checkbox">
-                {% for facet in facets %}
-                <label class="checkbox-label">
-                    <div class="input-wrapper">
-                        <input type="checkbox" name="genre" value="{{ facet.value }}">
-                        <span>{{ facet.value }}</span>
+            <div class="row">
+                <div class="genre">
+                    <p>장르</p>
+                    <!-- <p>{{facets}}</p> -->
+                    <div class="facet-checkbox">
+                    {% for facet in facets %}
+                    <label class="checkbox-label">
+                        <div class="input-wrapper">
+                            <input type="checkbox" name="genre" value="{{ facet.value }}">
+                            <span>{{ facet.value }}</span>
+                        </div>
+                        <span style="float: right;">{{ facet.count }}</span>
+                    </label>
+                    {% endfor %}
                     </div>
-                    <span style="float: right;">{{ facet.count }}</span>
-                </label>
-                {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="seen">
+                    클릭기록
                 </div>
             </div>
         </div>
