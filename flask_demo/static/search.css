@@ -53,7 +53,7 @@
 }
 
 .genre {
-    width: 200px;
+    width: 250px;
     margin: auto;
 }
 
@@ -75,4 +75,9 @@
 
 .query {
     display: inline;
+}
+
+.seen {
+    width: 250px;
+    margin: auto;
 }
