@@ -169,6 +169,12 @@ def filtering():
     else :
         search_result=app_search.search(engine_name=engine_name, page_size=20, query=term)
         return search_result['results']
+    
+    
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
         
 
 if __name__ == '__main__':
