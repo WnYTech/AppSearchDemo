@@ -11,6 +11,7 @@ body {
 .logo {
     margin-top: 10px;
     margin-left: 10px;
+    display: inline-block;
 }
 
 hr {
@@ -60,4 +61,11 @@ hr {
     margin-bottom: 0px;
     color: rgb(78, 78, 78);
     font-size: small;
+}
+
+.logout {
+    text-decoration-line: none;
+    float: right;
+    margin-top: 5px;
+    margin-right: 5px;
 }
